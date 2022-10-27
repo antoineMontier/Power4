@@ -16,7 +16,7 @@ void displayColor (int, int, char);
 void displayGrid (ColorCode **, int);
 void play (int);
 void insert(ColorCode**, ColorCode, int, int);
-int lineIsFull(ColorCode**, int )
+int lineIsFull(ColorCode**, int );
 
 
 
