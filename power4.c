@@ -15,6 +15,8 @@ void destroyGrid (ColorCode ***, int);
 void displayColor (int, int, char);
 void displayGrid (ColorCode **, int);
 void play (int);
+void insert(ColorCode**, ColorCode, int, int);
+int lineIsFull(ColorCode**, int )
 
 
 
@@ -59,9 +61,10 @@ void destroyGrid (ColorCode *** M, int n){//n is the matrix size (n*n)
 
 
 void displayGrid (ColorCode ** M, int n){
-  
+    printf("\n");
+
   for(char i = 'a' ; i <'a'+ n ; i++){    //controls
-      printf("%c ", i);
+      printf("%c|", i);
   }
   printf("\n");
 
@@ -73,10 +76,50 @@ void displayGrid (ColorCode ** M, int n){
   }
 }
 
+void insert(ColorCode**Mplay, ColorCode playercolor, int position, int size){
+  int level = -1;
+  while(level < size-1 && Mplay[level+1][position] == BLACK)
+    level++;
+    
+  Mplay[level][position] = playercolor;
+}
+
+int lineIsFull(ColorCode**Mplay, int pos){
+  if(Mplay[0][pos] != BLACK)
+    return 1;
+  return 0;
+}
+
 
 void play(int size){
   ColorCode ** Mplay = createGrid(size, 0);
   displayGrid(Mplay, size);
+  ColorCode player = 1;
+  char res;
+  
+  while(1){
+    
+    printf("player %d enter your position ", player);
+    do{
+      scanf("%c", &res);
+    }while(res < 'a' || res > 'a' + size - 1 || lineIsFull(Mplay, res - 'a'));
+    
+    insert(Mplay, player, res - 'a', size);
+    
+    if(player == 1)
+      player = 2;
+    else
+      player = 1;
+    
+    
+    displayGrid(Mplay, size);
+
+    
+  }
+  
+  
+  
+  
   destroyGrid(&Mplay, size);
 }
 
