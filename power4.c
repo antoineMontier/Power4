@@ -30,13 +30,13 @@ ColorCode ** createGrid(int n, int val){//n is the matrix size (n*n)
   M = malloc(n*sizeof(int*));
 
 //create each matrix line
-  for(int i = 0 ; i <= n ; i++){
+  for(int i = 0 ; i < n ; i++){
     M[i] = malloc(n*sizeof(int));
   }
 
 //initialize each line
-  for(int i = 0 ; i <= n ; i++){
-    for(int j = 0 ; j <= n ; j++){
+  for(int i = 0 ; i < n ; i++){
+    for(int j = 0 ; j < n ; j++){
       M[i][j] = val;
     }
   }
@@ -315,8 +315,9 @@ void randPlay(int size){
 
   while(1){//infinite loop
 
-
-    res = (int)rand()% size;
+    do{
+      res = (int)rand()% size;
+    }while(lineIsFull(Mplay, res));
 
     insert(Mplay, player, res, size);
 
@@ -343,15 +344,10 @@ void randPlay(int size){
 
   }
   destroyGrid(&Mplay, size);
-
-
-
-
-
 }
 
 
 int main(){/* gcc -c -Wall -Wextra power4.c && gcc power4.o -lm -o power4 && ./power4 */
-    randPlay(12);
+    randPlay(13);
     return 0;
 }
