@@ -17,6 +17,7 @@ void insert(ColorCode**, ColorCode, int, int);
 int lineIsFull(ColorCode**, int );
 int winDetection(ColorCode**, int, int*, int*, char*);
 int isFull(ColorCode**, int);
+int isFlooded (ColorCode ** , int );
 
 
 void displayColor(int fg, int bg, char c){
@@ -116,15 +117,11 @@ void displayGrid (ColorCode ** M, int n, int winline, int wincol, char windir){/
       y3 = y2 +1;
       y4 = y3 +1;
     }
-    printf("(%d, %d)\n", x1, y1);
+  /*  printf("(%d, %d)\n", x1, y1);
     printf("(%d, %d)\n", x2, y2);
     printf("(%d, %d)\n", x3, y3);
-    printf("(%d, %d)\n", x4, y4);
+    printf("(%d, %d)\n", x4, y4);*/
   }//here (x1, y1), (x2, y2), (x3, y3), (x4, y4) are the 4 wining coordinates
-
-
-
-
 
     printf("\n");
   for(char i = 'a' ; i <'a'+ n ; i++){    //controls
@@ -157,6 +154,18 @@ void insert(ColorCode**Mplay, ColorCode playercolor, int position, int size){
 
   Mplay[level][position] = playercolor;
 }
+
+int isFlooded (ColorCode ** M, int n){//renvois 1 si la matrice est remplie et 0 sinon
+  for(int i = 0 ; i < n ; i++){
+    for(int j = 0 ; j < n ; j++){
+      if(M[i][j] == 0){
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
 
 int lineIsFull(ColorCode**Mplay, int pos){
   if(Mplay[0][pos] != BLACK)
@@ -253,7 +262,8 @@ void play(int size){
   int winline = -1;
   int wincol = -1;
   char windir = 0;//'u' : up ; 'd' : down ; 'l' : left ; 'r' : right ;       '1' : left upper diag ; '2' : right upper diag ; '3' : left bottom diag ; '4' : right bottom diag
-  ColorCode ** Mplay = createGrid(size, 0);
+  ColorCode ** Mplay = createGrid(size, 0);      displayGrid(Mplay, size, winline, wincol, windir);
+
   displayGrid(Mplay, size, winline, wincol, windir);
   ColorCode player = 1;
   char res;
@@ -270,13 +280,21 @@ void play(int size){
     if(player == 1)
       player = 2;
     else
-      player = 1;    displayGrid(Mplay, size, winline, wincol, windir);
+      player = 1;
+
+    displayGrid(Mplay, size, winline, wincol, windir);
 
 
     int winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
     displayGrid(Mplay, size, winline, wincol, windir);
     if(winner != 0){
+      displayGrid(Mplay, size, winline, wincol, windir);
       printf("\n\nplayer %d won\n\n" , winner);
+      return;
+    }
+
+    if(isFlooded(Mplay, size)){
+      printf("equality !\n");
       return;
     }
 
@@ -311,8 +329,15 @@ void randPlay(int size){
     displayGrid(Mplay, size, winline, wincol, windir);
     if(winner != 0){
       printf("\n\nplayer %d won\n\n" , winner);
-      printf("win motif : (%d, %d) %c\n\n",winline, wincol, windir );
       displayGrid(Mplay, size, winline, wincol, windir);
+
+      //printf("win motif : (%d, %d) %c\n\n",winline, wincol, windir );
+      displayGrid(Mplay, size, winline, wincol, windir);
+      return;
+    }
+
+    if(isFlooded(Mplay, size)){
+      printf("equality !\n");
       return;
     }
 
