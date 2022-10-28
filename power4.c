@@ -12,12 +12,13 @@ ColorCode ** createGrid (int, int);
 void destroyGrid (ColorCode ***, int);
 void displayColor (int, int, char);
 void displayGrid (ColorCode **, int, int, int, char);
-void play (int);
+void playerVSplayer (int);
 void insert(ColorCode**, ColorCode, int, int);
 int lineIsFull(ColorCode**, int );
 int winDetection(ColorCode**, int, int*, int*, char*);
 int isFull(ColorCode**, int);
 int isFlooded (ColorCode ** , int );
+void playerVSbot(int );
 
 
 void displayColor(int fg, int bg, char c){
@@ -144,7 +145,7 @@ void displayGrid (ColorCode ** M, int n, int winline, int wincol, char windir){/
     }
     printf("|\n");
   }
-  printf("-------------------------------------\n");
+  //printf("-------------------------------------\n");
 }
 
 void insert(ColorCode**Mplay, ColorCode playercolor, int position, int size){
@@ -256,21 +257,73 @@ int winDetection(ColorCode**m, int size, int*winline, int*wincol, char*direction
 }
 
 
+int blockPlayer(ColorCode ** m, int size){
+  ColorCode **copy = createGrid(size, 0);
+
+  int useless1;
+  int useless2;
+  char useless3;
+
+  for(int e = 0 ; e < size ; e++){
+
+    for(int i = 0 ; i < size ; i++){
+      for(int j = 0 ; j < size ; j++){
+        copy[i][j] = m[i][j];
+      }
+    }
+    if(!lineIsFull(copy, e))
+      insert(copy, 1, e, size);//simulates every moves the player could do
+    if(winDetection(copy, size, &useless1, &useless2, &useless3))
+      return e;
+
+  }
+  destroyGrid(&copy, size);
+  return -1;
+}
 
 
-void play(int size){
+
+
+
+
+
+void playerVSplayer(int size){
   int winline = -1;
   int wincol = -1;
   char windir = 0;//'u' : up ; 'd' : down ; 'l' : left ; 'r' : right ;       '1' : left upper diag ; '2' : right upper diag ; '3' : left bottom diag ; '4' : right bottom diag
-  ColorCode ** Mplay = createGrid(size, 0);      displayGrid(Mplay, size, winline, wincol, windir);
+  ColorCode ** Mplay = createGrid(size, 0);
 
-  displayGrid(Mplay, size, winline, wincol, windir);
   ColorCode player = 1;
   char res;
 
+  char*p1 = malloc(50*sizeof(char));
+  char*p2 = malloc(50*sizeof(char));
+  p2[0] = p1[0] = 0;
+
+  printf("who's playing first ? (enter your name) : ");
+  do{
+    scanf("%s", p1);
+  }while(p1[0] == 0);
+
+  printf("who's the other player ? (enter your name) : ");
+  do{
+    scanf("%s", p2);
+  }while(p2[0] == 0);
+
+  printf("\nplayer 1 : %s   player 2 : %s\n", p1, p2 );
+
+  displayGrid(Mplay, size, winline, wincol, windir);
+
+
   while(1){//infinite loop
 
-    printf("player %d enter your position : ", player);
+    if(player == 1)
+      printf("%s enter your position : ", p1);
+
+    if(player == 2)
+      printf("%s enter your position : ", p2);
+
+
     do{
       scanf("%c", &res);
     }while(res < 'a' || res > 'a' + size - 1 || lineIsFull(Mplay, res - 'a'));
@@ -282,14 +335,14 @@ void play(int size){
     else
       player = 1;
 
-    displayGrid(Mplay, size, winline, wincol, windir);
-
-
     int winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
     displayGrid(Mplay, size, winline, wincol, windir);
     if(winner != 0){
-      displayGrid(Mplay, size, winline, wincol, windir);
-      printf("\n\nplayer %d won\n\n" , winner);
+      if(winner == 1)
+      printf("\n\n%s won !!\n\n" , p1);
+
+      if(winner == 2)
+      printf("\n\n%s won !!\n\n" , p2);
       return;
     }
 
@@ -312,6 +365,9 @@ void randPlay(int size){
   displayGrid(Mplay, size, winline, wincol, windir);
   ColorCode player = 1;
   char res;
+
+
+
 
   while(1){//infinite loop
 
@@ -347,7 +403,89 @@ void randPlay(int size){
 }
 
 
+
+void playerVSbot(int size){
+  int winline = -1;
+  int wincol = -1;
+  char windir = 0;//'u' : up ; 'd' : down ; 'l' : left ; 'r' : right ;       '1' : left upper diag ; '2' : right upper diag ; '3' : left bottom diag ; '4' : right bottom diag
+  ColorCode ** Mplay = createGrid(size, 0);
+
+  char res;
+
+
+  char botres;
+  int blockIndex = -1;
+
+  char*p1 = malloc(50*sizeof(char));
+  p1[0] = 0;
+  printf("who's playing ? (enter your name) : ");///name record
+  do{
+    scanf("%s", p1);
+  }while(p1[0] == 0);
+
+
+  displayGrid(Mplay, size, winline, wincol, windir);
+
+
+  while(1){//infinite loop
+
+    printf("%s enter your position : ", p1);
+    do{
+      scanf("%c", &res);
+    }while(res < 'a' || res > 'a' + size - 1 || lineIsFull(Mplay, res - 'a'));
+    printf("player playing %d ", res);
+    insert(Mplay, 1, res - 'a', size);
+    printf("played !\n");
+
+
+
+
+
+
+    do{
+      botres = (int)rand()% size;
+    }while(lineIsFull(Mplay, botres));//bo decides what to play
+
+    printf("bot has choose a random column to play%d\n", botres);
+
+
+    blockIndex = blockPlayer(Mplay, size);
+
+    printf("block player : %d\n", blockIndex);
+
+    if(blockIndex != -1 && !lineIsFull(Mplay, blockIndex))
+      botres = blockIndex;
+
+
+    printf("bot playing %d", botres);
+    insert(Mplay, 2, botres, size);
+    printf("played !\n");
+
+
+    int winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
+    displayGrid(Mplay, size, winline, wincol, windir);
+    if(winner != 0){
+      if(winner == 1)
+        printf("\n\n%s won !!\n\n" , p1);
+
+      if(winner == 2)
+        printf("\n\nRobot won !!\n\n");
+
+      destroyGrid(&Mplay, size);
+      return;
+    }
+
+    if(isFlooded(Mplay, size)){
+      printf("equality !\n");
+      destroyGrid(&Mplay, size);
+      return;
+    }
+
+  }
+}
+
+
 int main(){/* gcc -c -Wall -Wextra power4.c && gcc power4.o -lm -o power4 && ./power4 */
-    randPlay(13);
+    playerVSbot(10);
     return 0;
 }
