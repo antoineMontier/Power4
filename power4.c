@@ -19,6 +19,7 @@ int winDetection(ColorCode**, int, int*, int*, char*);
 int isFull(ColorCode**, int);
 int isFlooded (ColorCode ** , int );
 void playerVSbot(int );
+int blockPlayer(ColorCode ** , int );
 
 
 void displayColor(int fg, int bg, char c){
@@ -44,7 +45,6 @@ ColorCode ** createGrid(int n, int val){//n is the matrix size (n*n)
   return M;
 }
 
-
 void destroyGrid (ColorCode *** M, int n){//n is the matrix size (n*n)
   for(int i = 0 ; i < n; i++){
 
@@ -59,7 +59,6 @@ void destroyGrid (ColorCode *** M, int n){//n is the matrix size (n*n)
   free((*M));
   *M = NULL;
 }
-
 
 void displayGrid (ColorCode ** M, int n, int winline, int wincol, char windir){//'u' : up ; 'd' : down ; 'l' : left ; 'r' : right ;       '1' : left upper diag ; '2' : right upper diag ; '3' : left bottom diag ; '4' : right bottom diag
   int win = (winline != -1 && wincol != -1 && windir != 0);
@@ -167,7 +166,6 @@ int isFlooded (ColorCode ** M, int n){//renvois 1 si la matrice est remplie et 0
   return 1;
 }
 
-
 int lineIsFull(ColorCode**Mplay, int pos){
   if(Mplay[0][pos] != BLACK)
     return 1;
@@ -256,7 +254,6 @@ int winDetection(ColorCode**m, int size, int*winline, int*wincol, char*direction
   return 0;
 }
 
-
 int blockPlayer(ColorCode ** m, int size){
   ColorCode **copy = createGrid(size, 0);
 
@@ -273,6 +270,30 @@ int blockPlayer(ColorCode ** m, int size){
     }
     if(!lineIsFull(copy, e))
       insert(copy, 1, e, size);//simulates every moves the player could do
+    if(winDetection(copy, size, &useless1, &useless2, &useless3))
+      return e;
+
+  }
+  destroyGrid(&copy, size);
+  return -1;
+}
+
+int winnable(ColorCode ** m, int size){
+  ColorCode **copy = createGrid(size, 0);
+
+  int useless1;
+  int useless2;
+  char useless3;
+
+  for(int e = 0 ; e < size ; e++){
+
+    for(int i = 0 ; i < size ; i++){
+      for(int j = 0 ; j < size ; j++){
+        copy[i][j] = m[i][j];
+      }
+    }
+    if(!lineIsFull(copy, e))
+      insert(copy, 2, e, size);//simulates every moves the player could do
     if(winDetection(copy, size, &useless1, &useless2, &useless3))
       return e;
 
@@ -415,6 +436,7 @@ void playerVSbot(int size){
 
   char botres;
   int blockIndex = -1;
+  int winIndex = -1;
 
   char*p1 = malloc(50*sizeof(char));
   p1[0] = 0;
@@ -433,9 +455,9 @@ void playerVSbot(int size){
     do{
       scanf("%c", &res);
     }while(res < 'a' || res > 'a' + size - 1 || lineIsFull(Mplay, res - 'a'));
-    printf("player playing %d ", res);
+    //printf("player playing %d ", res);
     insert(Mplay, 1, res - 'a', size);
-    printf("played !\n");
+    //printf("played !\n");
 
 
 
@@ -446,20 +468,29 @@ void playerVSbot(int size){
       botres = (int)rand()% size;
     }while(lineIsFull(Mplay, botres));//bo decides what to play
 
-    printf("bot has choose a random column to play%d\n", botres);
+
+
+
+
+
+
+    //printf("bot has choose a random column to play%d\n", botres);
 
 
     blockIndex = blockPlayer(Mplay, size);
+    winIndex = winnable(Mplay, size);
 
-    printf("block player : %d\n", blockIndex);
+    //printf("block player : %d\n", blockIndex);
 
-    if(blockIndex != -1 && !lineIsFull(Mplay, blockIndex))
+    if(blockIndex != -1)
       botres = blockIndex;
 
+    if(winIndex != -1)
+      botres = winIndex;
 
-    printf("bot playing %d", botres);
+    //printf("bot playing %d", botres);
     insert(Mplay, 2, botres, size);
-    printf("played !\n");
+  //  printf("played !\n");
 
 
     int winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
