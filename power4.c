@@ -365,9 +365,56 @@ int* dangerousZones(ColorCode ** m, int size){//objectif is to stimulate two mov
   return results;
 }
 
+int* notToPlay(ColorCode ** m, int size){//objectif is to stimulate one move of robot and then everymove of the player to assert he can't win
+  ColorCode **copy = createGrid(size, 0);
+  ColorCode **copyy = createGrid(size, 0);
+
+  int useless1;
+  int useless2;
+  char useless3;
+
+  int*results = malloc(size*sizeof(int));//result tab resuls[k] is the umber of differents ways the player could win playing k move
+
+  for(int i = 0 ; i < size ; i++){
+    results[i] = 0;
+  }
 
 
+  for(int e = 0 ; e < size ; e++){
 
+    for(int i = 0 ; i < size ; i++){
+      for(int j = 0 ; j < size ; j++){
+        copy[i][j] = m[i][j];
+      }
+    }
+
+
+    if(!lineIsFull(copy, e)){
+      insert(copy, 2, e, size);//simulates every moves the player could do as first turn
+
+      for(int f = 0 ; f < size && results[e] == 0 ; f ++){
+
+        for(int i = 0 ; i < size ; i++){
+          for(int j = 0 ; j < size ; j++){//reset copyy
+            copyy[i][j] = copy[i][j];
+          }
+        }
+
+        if(!lineIsFull(copyy, e))
+          insert(copyy, 1, f, size);//simulates every moves the player could do as second turn
+
+        if(winDetection(copyy, size, &useless1, &useless2, &useless3))
+          results[e] = 1;
+        }
+      }
+
+
+  }
+
+  destroyGrid(&copyy, size);
+  destroyGrid(&copy, size);
+  return results;//the tab conains 0 if it's safe to play here and 1 if not
+}
 
 void playerVSplayer(int size){
   int winline = -1;
@@ -437,7 +484,6 @@ void playerVSplayer(int size){
   destroyGrid(&Mplay, size);
 }
 
-
 void randPlay(int size){
   int winline = -1;
   int wincol = -1;
@@ -484,8 +530,6 @@ void randPlay(int size){
   destroyGrid(&Mplay, size);
 }
 
-
-
 void playerVSbot(int size){
   int winline = -1;
   int wincol = -1;
@@ -495,11 +539,12 @@ void playerVSbot(int size){
   char res;
 
 
-  char botres;
+  int botres;
   int blockIndex = -1;
   int winIndex = -1;
   int toBlock;
   int*toBlockTab;
+  int*notPlay;
 
   char*p1 = malloc(50*sizeof(char));
   p1[0] = 0;
@@ -526,44 +571,44 @@ void playerVSbot(int size){
 
 
 
+    notPlay = notToPlay(Mplay, size);
 
     do{
-      botres = (int)rand()% size;
-    }while(lineIsFull(Mplay, botres));//bo decides what to play
+      botres = (int)(rand() + 2 ) % (size -1);
+    }while(lineIsFull(Mplay, botres) && notPlay[botres] == 0);//bo decides what to play
+
+    printf("bot has choose a random column to play %d\n", botres);
 
 
+    printf("\n");
+    for(int e = 0 ; e < size ; e++){
+      printf(" %d ",e);
+    }
+    printf("\n");
+
+    for(int e = 0 ; e < size ; e++){
+      printf(" %d ",notPlay[e]);
+    }
 
 
-
-
-
-    //printf("bot has choose a random column to play%d\n", botres);
 
     toBlockTab = dangerousZones(Mplay, size);
     toBlock = maxIndex(toBlockTab, size);
-    /*printf("\n");
-    for(int e = 0 ; e < size ; e++){
-      printf(" %d ",toBlockTab[e]);
-    }
-    printf("   %d", toBlock);*/
-
-
-
 
     blockIndex = blockPlayer(Mplay, size);
     winIndex = winnable(Mplay, size);
 
     //printf("block player : %d\n", blockIndex);
-    if(toBlock != -1)
+    if(toBlock != -1 && notPlay[toBlock] == 0)
       botres = toBlock;
 
-    if(blockIndex != -1)
+    if(blockIndex != -1 && notPlay[blockIndex] == 0)
       botres = blockIndex;
 
     if(winIndex != -1)
       botres = winIndex;
 
-    //printf("bot playing %d", botres);
+    printf("bot playing %d", botres);
     insert(Mplay, 2, botres, size);
   //  printf("played !\n");
 
