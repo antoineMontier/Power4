@@ -472,16 +472,20 @@ void playerVSplayer(int size){
 
       if(winner == 2)
       printf("\n\n%s won !!\n\n" , p2);
+      free(p1);
+      free(p2);
       return;
     }
 
     if(isFlooded(Mplay, size)){
       printf("equality !\n");
+      destroyGrid(&Mplay, size);
+      free(p1);
+      free(p2);
       return;
     }
 
   }
-  destroyGrid(&Mplay, size);
 }
 
 void randPlay(int size){
@@ -518,17 +522,20 @@ void randPlay(int size){
 
       //printf("win motif : (%d, %d) %c\n\n",winline, wincol, windir );
       displayGrid(Mplay, size, winline, wincol, windir);
+      destroyGrid(&Mplay, size);
       return;
     }
 
     if(isFlooded(Mplay, size)){
       printf("equality !\n");
+      destroyGrid(&Mplay, size);
       return;
     }
 
   }
-  destroyGrid(&Mplay, size);
 }
+
+
 
 void playerVSbot(int size){
   int winline = -1;
@@ -537,6 +544,7 @@ void playerVSbot(int size){
   ColorCode ** Mplay = createGrid(size, 0);
 
   char res;
+  int winner = 0;
 
 
   int botres;
@@ -566,21 +574,52 @@ void playerVSbot(int size){
     //printf("player playing %d ", res);
     insert(Mplay, 1, res - 'a', size);
     //printf("played !\n");
+    
+    
+    
+    winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
+    displayGrid(Mplay, size, winline, wincol, windir);
+    if(winner == 1 || winner == 2){
+      if(winner == 1)
+        printf("\n\n%s won !!\n\n" , p1);
+
+      if(winner == 2)
+        printf("\n\nRobot won !!\n\n");
+
+      destroyGrid(&Mplay, size);
+      free(p1);
+      free(notToPlay);
+      free(toBlockTab);
+      return;
+    }
+
+    if(isFlooded(Mplay, size)){
+      printf("equality !\n");
+      destroyGrid(&Mplay, size);
+      free(p1);
+      free(notToPlay);
+      free(toBlockTab);
+      return;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 
 
 
     notPlay = notToPlay(Mplay, size);
-
-    do{
-      botres = (int)(rand() + 2 ) % (size -1);
-    }while(lineIsFull(Mplay, botres) && notPlay[botres] == 0);//bo decides what to play
-
-    printf("bot has choose a random column to play %d\n", botres);
-
-
-    printf("\n");
+    
+   /* printf("\n");
     for(int e = 0 ; e < size ; e++){
       printf(" %d ",e);
     }
@@ -588,7 +627,21 @@ void playerVSbot(int size){
 
     for(int e = 0 ; e < size ; e++){
       printf(" %d ",notPlay[e]);
-    }
+    }*/
+
+
+
+    do{
+      botres = (int)(rand() + 2 ) % (size -1);
+      /*printf("column %d\t", botres);
+      printf("full line %d\t", lineIsFull(Mplay, botres));
+      printf("not to play here ? : %d\n", notPlay[botres]);*/
+    }while(lineIsFull(Mplay, botres) || notPlay[botres] != 0);//bot decides what to play
+
+    //printf("bot has choose a random column to play %d\n", botres);
+
+
+    
 
 
 
@@ -613,9 +666,9 @@ void playerVSbot(int size){
   //  printf("played !\n");
 
 
-    int winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
+    winner  = winDetection(Mplay, size, &winline, &wincol, &windir);
     displayGrid(Mplay, size, winline, wincol, windir);
-    if(winner != 0){
+    if(winner == 1 || winner == 2){
       if(winner == 1)
         printf("\n\n%s won !!\n\n" , p1);
 
@@ -623,12 +676,18 @@ void playerVSbot(int size){
         printf("\n\nRobot won !!\n\n");
 
       destroyGrid(&Mplay, size);
+      free(p1);
+      free(notToPlay);
+      free(toBlockTab);
       return;
     }
 
     if(isFlooded(Mplay, size)){
       printf("equality !\n");
       destroyGrid(&Mplay, size);
+      free(p1);
+      free(notToPlay);
+      free(toBlockTab);
       return;
     }
 
@@ -638,5 +697,6 @@ void playerVSbot(int size){
 
 int main(){/* gcc -c -Wall -Wextra power4.c && gcc power4.o -lm -o power4 && ./power4 */
     playerVSbot(10);
+    //playerVSplayer(10);
     return 0;
 }
