@@ -722,7 +722,7 @@ void playerVSbot(int size){
       /*printf("column %d\t", botres);
       printf("full line %d\t", lineIsFull(Mplay, botres));
       printf("not to play here ? : %d\n", notPlay[botres]);*/
-    }while(randIterations < 100 && (lineIsFull(Mplay, botres) || notPlay[botres] != 0));//bot decides what to play
+    }while(randIterations < size*size*size && (lineIsFull(Mplay, botres) || notPlay[botres] != 0));//bot decides what to play
 
     //printf("bot has choose a random column to play %d\n", botres);
     
@@ -777,7 +777,7 @@ void playerVSbot(int size){
 
 int main(){/* gcc -c -Wall -Wextra power4.c && gcc power4.o -lm -o power4 && ./power4 */
   //randPlay(10);
-  playerVSbot(10);
+  playerVSbot(7);
   //playerVSplayer(10);
     return 0;
 }
