@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 
 // const int
@@ -39,16 +40,16 @@ void displayColor(int fg, int bg, char c){
 }
 
 ColorCode ** createGrid(int n, int val){//n is the matrix size (n*n)
-//create pointeur array
+  //create pointeur array
   ColorCode ** M;
   M = malloc(n*sizeof(int*));
 
-//create each matrix line
+  //create each matrix line
   for(int i = 0 ; i < n ; i++){
     M[i] = malloc(n*sizeof(int));
   }
 
-//initialize each line
+  //initialize each line
   for(int i = 0 ; i < n ; i++){
     for(int j = 0 ; j < n ; j++){
       M[i][j] = val;
@@ -416,6 +417,22 @@ int* notToPlay(ColorCode ** m, int size){//objectif is to stimulate one move of 
   return results;//the tab conains 0 if it's safe to play here and 1 if not
 }
 
+int artificialRandom(int lower, int upper){//stimulates a random number between lower and upper (included) with a highest probability for middle numbers !
+  srand(clock());
+  //first let's generate a random number between lower and upper :
+  int a = lower + (rand()) % (upper - lower +1);
+  //then let's find the 1st and nb thirds :
+  double q1 = (upper - lower)/4;
+  double q3 = 3*q1;
+  
+  if(a < q1 + lower)
+    a += rand() % ((int)q1);
+  if(a > q3 + lower)
+    a -= rand() % ((int)q1);
+    
+  return a;
+}
+
 void playerVSplayer(int size){
   int winline = -1;
   int wincol = -1;
@@ -504,8 +521,10 @@ void randPlay(int size){
   while(1){//infinite loop
 
     do{
-      res = (int)rand()% size;
+      res = artificialRandom(0, size-1);
     }while(lineIsFull(Mplay, res));
+    
+    printf("%d", res);
 
     insert(Mplay, player, res, size);
 
@@ -696,7 +715,10 @@ void playerVSbot(int size){
 
 
 int main(){/* gcc -c -Wall -Wextra power4.c && gcc power4.o -lm -o power4 && ./power4 */
-    playerVSbot(10);
-    //playerVSplayer(10);
+  
+  //printf("%d\n", artificialRandom(10, 20));
+  randPlay(10);
+  //playerVSbot(10);
+  //playerVSplayer(10);
     return 0;
 }
