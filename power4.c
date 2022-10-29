@@ -21,6 +21,8 @@ int isFull(ColorCode**, int);
 int isFlooded (ColorCode ** , int );
 void playerVSbot(int );
 int blockPlayer(ColorCode ** , int );
+int artificialRandom(int , int );
+int* advantageousZones(ColorCode ** , int );
 
 
 int maxIndex(int * tab, int size){
@@ -366,6 +368,61 @@ int* dangerousZones(ColorCode ** m, int size){//objectif is to stimulate two mov
   return results;
 }
 
+
+
+int* advantageousZones(ColorCode ** m, int size){//objectif is to stimulate two moves of the bot and play the first one that makes him win
+  ColorCode **copy = createGrid(size, 0);
+  ColorCode **copyy = createGrid(size, 0);
+
+  int useless1;
+  int useless2;
+  char useless3;
+
+  int*results = malloc(size*sizeof(int));//result tab resuls[k] is the umber of differents ways the bot could win playing k move
+
+  for(int i = 0 ; i < size ; i++){
+    results[i] = 0;
+  }
+
+
+  for(int e = 0 ; e < size ; e++){
+
+    for(int i = 0 ; i < size ; i++){
+      for(int j = 0 ; j < size ; j++){
+        copy[i][j] = m[i][j];
+      }
+    }
+
+
+    if(!lineIsFull(copy, e)){
+      insert(copy, 2, e, size);//simulates every moves the bot could do as first turn
+
+      for(int f = 0 ; f < size ; f ++){
+
+        for(int i = 0 ; i < size ; i++){
+          for(int j = 0 ; j < size ; j++){//reset copyy
+            copyy[i][j] = copy[i][j];
+          }
+        }
+
+        if(!lineIsFull(copyy, e))
+          insert(copyy, 2, f, size);//simulates every moves the bot could do as second turn
+
+        if(winDetection(copyy, size, &useless1, &useless2, &useless3))
+          results[e]++;
+        }
+      }
+
+
+  }
+
+  destroyGrid(&copyy, size);
+  destroyGrid(&copy, size);
+  return results;
+}
+
+
+
 int* notToPlay(ColorCode ** m, int size){//objectif is to stimulate one move of robot and then everymove of the player to assert he can't win
   ColorCode **copy = createGrid(size, 0);
   ColorCode **copyy = createGrid(size, 0);
@@ -572,6 +629,9 @@ void playerVSbot(int size){
   int toBlock;
   int*toBlockTab;
   int*notPlay;
+  int randIterations;
+  int*toPlayTab;
+  int toPlay;
 
   char*p1 = malloc(50*sizeof(char));
   p1[0] = 0;
@@ -609,6 +669,7 @@ void playerVSbot(int size){
       free(p1);
       free(notToPlay);
       free(toBlockTab);
+      free(toPlayTab);
       return;
     }
 
@@ -618,6 +679,7 @@ void playerVSbot(int size){
       free(p1);
       free(notToPlay);
       free(toBlockTab);
+      free(toPlayTab);
       return;
     }
     
@@ -634,9 +696,12 @@ void playerVSbot(int size){
 
 
 
-
-
+    toBlockTab = dangerousZones(Mplay, size);
+    toBlock = maxIndex(toBlockTab, size);
     notPlay = notToPlay(Mplay, size);
+    toPlayTab = advantageousZones(Mplay, size);
+    toPlay = maxIndex(toPlayTab, size);
+
     
    /* printf("\n");
     for(int e = 0 ; e < size ; e++){
@@ -649,34 +714,28 @@ void playerVSbot(int size){
     }*/
 
 
-
+    randIterations = 0;
     do{
-      botres = (int)(rand() + 2 ) % (size -1);
+      botres = artificialRandom(0, size-1);
+      randIterations++;
+      printf("%d ", randIterations);
       /*printf("column %d\t", botres);
       printf("full line %d\t", lineIsFull(Mplay, botres));
       printf("not to play here ? : %d\n", notPlay[botres]);*/
-    }while(lineIsFull(Mplay, botres) || notPlay[botres] != 0);//bot decides what to play
+    }while(randIterations < 100 && (lineIsFull(Mplay, botres) || notPlay[botres] != 0));//bot decides what to play
 
     //printf("bot has choose a random column to play %d\n", botres);
-
-
     
-
-
-
-    toBlockTab = dangerousZones(Mplay, size);
-    toBlock = maxIndex(toBlockTab, size);
-
-    blockIndex = blockPlayer(Mplay, size);
-    winIndex = winnable(Mplay, size);
-
-    //printf("block player : %d\n", blockIndex);
+    
+    blockIndex = blockPlayer(Mplay, size);//avoid the player to win
+    winIndex = winnable(Mplay, size);//let the bot win in one move
+    
+    if(toPlay != -1 && notPlay[toPlay] ==0)
+      botres = toPlay;
     if(toBlock != -1 && notPlay[toBlock] == 0)
       botres = toBlock;
-
     if(blockIndex != -1 && notPlay[blockIndex] == 0)
       botres = blockIndex;
-
     if(winIndex != -1)
       botres = winIndex;
 
@@ -698,6 +757,7 @@ void playerVSbot(int size){
       free(p1);
       free(notToPlay);
       free(toBlockTab);
+      free(toPlayTab);
       return;
     }
 
@@ -707,6 +767,7 @@ void playerVSbot(int size){
       free(p1);
       free(notToPlay);
       free(toBlockTab);
+      free(toPlayTab);
       return;
     }
 
@@ -715,10 +776,8 @@ void playerVSbot(int size){
 
 
 int main(){/* gcc -c -Wall -Wextra power4.c && gcc power4.o -lm -o power4 && ./power4 */
-  
-  //printf("%d\n", artificialRandom(10, 20));
-  randPlay(10);
-  //playerVSbot(10);
+  //randPlay(10);
+  playerVSbot(10);
   //playerVSplayer(10);
     return 0;
 }
