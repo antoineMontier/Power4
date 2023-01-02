@@ -185,25 +185,17 @@ void insert(ColorCode **Mplay, ColorCode playercolor, int position, int size)
 }
 
 int isFlooded(ColorCode **M, int n)
-{ // renvois 1 si la matrice est remplie et 0 sinon
+{ // returns 1 if matrix is full, 0 otherwise
     for (int i = 0; i < n; i++)
-    {
         for (int j = 0; j < n; j++)
-        {
             if (M[i][j] == 0)
-            {
                 return 0;
-            }
-        }
-    }
     return 1;
 }
 
 int lineIsFull(ColorCode **Mplay, int pos)
 {
-    if (Mplay[0][pos] != BLACK)
-        return 1;
-    return 0;
+    return Mplay[0][pos] != BLACK;
 }
 
 int winDetection(ColorCode **m, int size, int *winline, int *wincol, char *direction)
@@ -315,12 +307,9 @@ int blockPlayer(ColorCode **m, int size)
     {
 
         for (int i = 0; i < size; i++)
-        {
             for (int j = 0; j < size; j++)
-            {
                 copy[i][j] = m[i][j];
-            }
-        }
+
         if (!lineIsFull(copy, e))
             insert(copy, 1, e, size); // simulates every moves the player could do
         if (winDetection(copy, size, &useless1, &useless2, &useless3))
@@ -414,7 +403,7 @@ int *dangerousZones(ColorCode **m, int size)
 }
 
 int *advantageousZones(ColorCode **m, int size)
-{ // objectif is to stimulate two moves of the bot and play the first one that makes him win
+{ // objectif is to stimulate two moves of the bot and play the first one that would drive him to victory
     ColorCode **copy = createGrid(size, 0);
     ColorCode **copyy = createGrid(size, 0);
 
@@ -425,20 +414,15 @@ int *advantageousZones(ColorCode **m, int size)
     int *results = malloc(size * sizeof(int)); // result tab resuls[k] is the umber of differents ways the bot could win playing k move
 
     for (int i = 0; i < size; i++)
-    {
         results[i] = 0;
-    }
 
     for (int e = 0; e < size; e++)
     {
 
         for (int i = 0; i < size; i++)
-        {
             for (int j = 0; j < size; j++)
-            {
                 copy[i][j] = m[i][j];
-            }
-        }
+
 
         if (!lineIsFull(copy, e))
         {
@@ -448,12 +432,8 @@ int *advantageousZones(ColorCode **m, int size)
             {
 
                 for (int i = 0; i < size; i++)
-                {
-                    for (int j = 0; j < size; j++)
-                    { // reset copyy
+                    for (int j = 0; j < size; j++)// reset copyy
                         copyy[i][j] = copy[i][j];
-                    }
-                }
 
                 if (!lineIsFull(copyy, e))
                     insert(copyy, 2, f, size); // simulates every moves the bot could do as second turn
@@ -481,20 +461,15 @@ int *notToPlay(ColorCode **m, int size)
     int *results = malloc(size * sizeof(int)); // result tab resuls[k] is the umber of differents ways the player could win playing k move
 
     for (int i = 0; i < size; i++)
-    {
         results[i] = 0;
-    }
 
     for (int e = 0; e < size; e++)
     {
 
         for (int i = 0; i < size; i++)
-        {
             for (int j = 0; j < size; j++)
-            {
                 copy[i][j] = m[i][j];
-            }
-        }
+
 
         if (!lineIsFull(copy, e))
         {
@@ -504,12 +479,8 @@ int *notToPlay(ColorCode **m, int size)
             {
 
                 for (int i = 0; i < size; i++)
-                {
-                    for (int j = 0; j < size; j++)
-                    { // reset copyy
+                    for (int j = 0; j < size; j++) // reset copyy
                         copyy[i][j] = copy[i][j];
-                    }
-                }
 
                 if (!lineIsFull(copyy, e))
                     insert(copyy, 1, f, size); // simulates every moves the player could do as second turn
