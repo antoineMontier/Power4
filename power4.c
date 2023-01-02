@@ -49,13 +49,13 @@ void destroyGrid(ColorCode ***M, int n)
 
         if ((*M)[i] == NULL)
         {
-            printf("line %d hasn't been destroyed\n", i);
+            fprintf(stderr, "line %d hasn't been destroyed\n", i);
             i++;
         }
         free((*M)[i]);
     }
     if ((*M) == NULL)
-        printf("matrix is null");
+        fprintf(stderr, "matrix is null");
     free((*M));
     *M = NULL;
 }
