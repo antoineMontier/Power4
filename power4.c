@@ -175,6 +175,8 @@ void displayGrid(ColorCode **M, int n, int winline, int wincol, char windir)
 
 void insert(ColorCode **Mplay, ColorCode playercolor, int position, int size)
 {
+    if(Mplay[0][position] != 0)//avoid bugs
+        return;
     int level = -1;
     while (level < size - 1 && Mplay[level + 1][position] == BLACK)
         level++;
