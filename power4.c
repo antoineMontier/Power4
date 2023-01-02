@@ -69,82 +69,82 @@ void displayGrid(ColorCode **M, int n, int winline, int wincol, char windir)
     {
         x1 = winline;
         y1 = wincol;
+        switch(windir){
+                
+            case 'l':
+                x2 = x3 = x4 = x1;
+                y2 = y1 - 1;
+                y3 = y2 - 1;
+                y4 = y3 - 1;
+                break;
+                
+            case 'd':
+                x2 = x3 = x4 = x1;
+                y2 = y1 + 1;
+                y3 = y2 + 1;
+                y4 = y3 + 1;
+                break;
+                
+            case 'u':
+                y2 = y3 = y4 = y1;
+                x2 = x1 - 1;
+                x3 = x2 - 1;
+                x4 = x3 - 1;
+                break;
+               
+            case 'r':
+                y2 = y3 = y4 = y1;
+                x2 = x1 + 1;
+                x3 = x2 + 1;
+                x4 = x3 + 1;
+                break;
+                
+            case '1':
+                x2 = x1 - 1;
+                x3 = x2 - 1;
+                x4 = x3 - 1;
+                y2 = y1 - 1;
+                y3 = y2 - 1;
+                y4 = y3 - 1;
+                break;
+                
+            case '2':
+                x2 = x1 + 1;
+                x3 = x2 + 1;
+                x4 = x3 + 1;
+                y2 = y1 - 1;
+                y3 = y2 - 1;
+                y4 = y3 - 1;
+                break;
+                
+            case '3':
+                x2 = x1 - 1;
+                x3 = x2 - 1;
+                x4 = x3 - 1;
+                y2 = y1 + 1;
+                y3 = y2 + 1;
+                y4 = y3 + 1;
+                break;
+            
+            case '4' : 
+               x2 = x1 + 1;
+                x3 = x2 + 1;
+                x4 = x3 + 1;
+                y2 = y1 + 1;
+                y3 = y2 + 1;
+                y4 = y3 + 1;
+                break;
+            
+            default:
+                break;
+        }
 
-        if (windir == 'l')
-        {
-            x2 = x3 = x4 = x1;
-            y2 = y1 - 1;
-            y3 = y2 - 1;
-            y4 = y3 - 1;
-        }
-        else if (windir == 'd')
-        {
-            x2 = x3 = x4 = x1;
-            y2 = y1 + 1;
-            y3 = y2 + 1;
-            y4 = y3 + 1;
-        }
-        else if (windir == 'u')
-        {
-            y2 = y3 = y4 = y1;
-            x2 = x1 - 1;
-            x3 = x2 - 1;
-            x4 = x3 - 1;
-        }
-        else if (windir == 'r')
-        {
-            y2 = y3 = y4 = y1;
-            x2 = x1 + 1;
-            x3 = x2 + 1;
-            x4 = x3 + 1;
-        }
-        else if (windir == '1')
-        {
-            x2 = x1 - 1;
-            x3 = x2 - 1;
-            x4 = x3 - 1;
-            y2 = y1 - 1;
-            y3 = y2 - 1;
-            y4 = y3 - 1;
-        }
-        else if (windir == '2')
-        {
-            x2 = x1 + 1;
-            x3 = x2 + 1;
-            x4 = x3 + 1;
-            y2 = y1 - 1;
-            y3 = y2 - 1;
-            y4 = y3 - 1;
-        }
-        else if (windir == '3')
-        {
-            x2 = x1 - 1;
-            x3 = x2 - 1;
-            x4 = x3 - 1;
-            y2 = y1 + 1;
-            y3 = y2 + 1;
-            y4 = y3 + 1;
-        }
-        else if (windir == '4')
-        {
-            x2 = x1 + 1;
-            x3 = x2 + 1;
-            x4 = x3 + 1;
-            y2 = y1 + 1;
-            y3 = y2 + 1;
-            y4 = y3 + 1;
-        }
-        /*  printf("(%d, %d)\n", x1, y1);
-          printf("(%d, %d)\n", x2, y2);
-          printf("(%d, %d)\n", x3, y3);
-          printf("(%d, %d)\n", x4, y4);*/
+
     } // here (x1, y1), (x2, y2), (x3, y3), (x4, y4) are the 4 wining coordinates
 
     printf("\n");
     for (char i = 'a'; i < 'a' + n; i++)
-    { // controls
         printf("|%c ", i);
-    }
     printf("|\n");
 
     for (int i = 0; i < n; i++)
