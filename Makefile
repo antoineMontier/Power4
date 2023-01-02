@@ -1,34 +1,34 @@
-# make && ./lll
-# liste des fichiers source
-SRC = power4.c
-#SRC = $(wildcard *.c)
+# make && ./main
+# source files list
 
-# liste des fichiers .o et des dependances (mis dans le repertoire build/)
+SRC = $(wildcard *.c)
+
+
 OBJ = $(addprefix build/,$(SRC:.c=.o))
 DEP = $(addprefix build/,$(SRC:.c=.d))
 
-# nom du compilateur
+# compilator name
 CC = gcc
 
-# nom de l'executable
-EXE = power4
+# executable name
+EXE = main
 
-# flags de compilation (CFLAGS) et d'edition de liens (LDFLAGS)
-CFLAGS += -Wall -Wextra -MMD -g -O2
-LDFLAGS= #-lm
+# compilation flages (CFLAGS) and links edition (LDFLAGS)
+CFLAGS += -Wall `sdl2-config --cflags`
+LDFLAGS = -lm -lSDL2_ttf `sdl2-config --libs`
 
-# regle principale: generer l'executable
+# principal rule : make the executable file
 all: $(OBJ)
 	$(CC) -o $(EXE) $^ $(LDFLAGS)
 
-# regle generique pour produire un fichier .o a partir d'un fichier .c
+# standart rule to make a .o file from a .c file
 build/%.o: %.c
 	@mkdir -p build
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-# regle generique pour faire du nettoyage
+# standart rule to clean
 clean:
 	rm -rf build core *.gch
 
-# inclusion automatique du fichier de dependances
+# automatic inclution of the dependencies
 -include $(DEP)
