@@ -5,7 +5,7 @@
 #define FG_SHIFT 30
 #define BG_SHIFT 40
 
-typedef enum {BLACK = 0, RED, GREEN, MAX_COLORS} ColorCode;
+typedef enum {BLACK = 0, RED, GREEN, MAX_COLORS} ColorCode;//auto-incrementation of the values of each variables with the enum
 
 ColorCode ** createGrid (int, int);
 void destroyGrid (ColorCode ***, int);
